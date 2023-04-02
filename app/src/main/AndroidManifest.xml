@@ -22,7 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name="com.github.tumusx.idle.alarmManager.IdleReceiver"/>
+        <receiver android:name="com.github.tumusx.idle.alarmManager.AlarmReceiver"/>
     </application>
 
 </manifest>
