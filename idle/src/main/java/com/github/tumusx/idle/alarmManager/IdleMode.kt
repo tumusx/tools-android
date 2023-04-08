@@ -23,13 +23,13 @@ class IdleAlarmManager(context: Context) {
         PendingIntent.getBroadcast(context, 0, Intent(context, AlarmReceiver::class.java), 0)
     private val calendar = Calendar.getInstance().apply {
         timeInMillis = System.currentTimeMillis()
-        set(Calendar.HOUR_OF_DAY, 13)
-        set(Calendar.MINUTE, 6)
+        set(Calendar.HOUR_OF_DAY, 16)
+        set(Calendar.MINUTE, 43)
     }
 
-    fun setAlarmManager() = alarmManager.setAndAllowWhileIdle (
+    fun setAlarmManager() = alarmManager.setExactAndAllowWhileIdle (
         AlarmManager.RTC_WAKEUP,
-        47040000,
+        calendar.timeInMillis,
         alarmIntent
     )
 }
@@ -37,7 +37,7 @@ class IdleAlarmManager(context: Context) {
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
-            var builder = NotificationCompat.Builder(context, "12345")
+            val builder = NotificationCompat.Builder(context, "12345")
                 .setSmallIcon(R.drawable.notification)
                 .setContentTitle("Murillo")
                 .setContentText("Entre no nosso aplicativo")
@@ -59,8 +59,6 @@ class AlarmReceiver : BroadcastReceiver() {
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channelNotification)
             notificationManager.notify(12345, builder.build())
-            Log.d("ALARM", "ALARM TOCANDO")
-            Toast.makeText(context, "Alarme tocando", Toast.LENGTH_LONG).show()
         }
     }
 }

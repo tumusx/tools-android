@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/idle" />
             <option value="$PROJECT_DIR$/location" />
             <option value="$PROJECT_DIR$/permissions" />
+            <option value="$PROJECT_DIR$/tasks" />
           </set>
         </option>
       </GradleProjectSettings>
