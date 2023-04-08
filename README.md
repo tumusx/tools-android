@@ -7,5 +7,6 @@ Learning diff solutions
    * Module Camera
 * Background tasks - Idle mode with AlarmManager?
    * Module idle
+   * <a href="https://dev.to/tumusx/garantindo-a-execucao-de-alarmes-no-modo-soneca-do-android-2pcn">Garantindo a execução de alarmes no modo soneca do Android</a>.
 * Permissions - How to request permissions in devices?
    * Module permissions
