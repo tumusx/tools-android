@@ -17,7 +17,6 @@ import com.google.android.gms.common.api.Status
 
 class SmsBroadcastReceiver() : BroadcastReceiver() {
 
-    lateinit var activity: AppCompatActivity
     private fun <T>configureParcelable(parcelable: String, intent: Intent, classParcelable: Class<T>) : T? {
         return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.extras?.getParcelable(parcelable, classParcelable)
@@ -34,18 +33,14 @@ class SmsBroadcastReceiver() : BroadcastReceiver() {
                 when (smsRetrieverStatus?.statusCode) {
                     CommonStatusCodes.SUCCESS -> {
                         val consentIntent = configureParcelable(SmsRetriever.EXTRA_CONSENT_INTENT, intent, Intent::class.java)
-                        val resultLauncher = activity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {result->
-                            if(result.resultCode == Activity.RESULT_OK) {
-                                States.statesResult?.onSuccess(result.data?.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE))
-                            }
-                        }
-                        resultLauncher.launch(consentIntent)
+                        consentIntent?.let { States.statesResult?.onSuccess(it)}
                     }
+
                     CommonStatusCodes.ERROR -> {
                         States.statesResult?.error(TypeError.ERROR)
                     }
 
-                    CommonStatusCodes.TIMEOUT -> {gi
+                    CommonStatusCodes.TIMEOUT -> {
                         States.statesResult?.error(TypeError.TIMEOUT)
                     }
                 }

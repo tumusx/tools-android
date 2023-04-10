@@ -1,10 +1,14 @@
 package com.github.tumusx.camlocation.views
 
+import android.app.Activity
+import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.provider.Telephony.Sms
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.github.tumusx.camlocation.R
 import com.github.tumusx.idle.alarmManager.IdleAlarmManager
@@ -18,16 +22,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var smsClient: SmsRetrieverClient
 
     private val broadcastReceiver = SmsBroadcastReceiver()
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        broadcastReceiver.activity = this
+        resultLauncher()
         smsClient = SmsRetriever.getClient(this@MainActivity)
         val idleAlarmManager = IdleAlarmManager(this)
         val actionId = IntentFilter()
         val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
-        registerReceiver(broadcastReceiver, intentFilter, SmsRetriever.SEND_PERMISSION,null)
-
+        registerReceiver(broadcastReceiver, intentFilter)
         configureFieldsWithSMS()
         idleAlarmManager.setAlarmManager()
         initSmsClient()
@@ -43,14 +47,23 @@ class MainActivity : AppCompatActivity() {
     }
     private fun configureFieldsWithSMS() {
         States.instanceStates(object : States {
-            override fun onSuccess(sms: String?) {
-                Log.d("SMS", sms.toString())
+            override fun onSuccess(consentIntent: Intent) {
+                resultLauncher.launch(consentIntent)
             }
 
             override fun error(typeError: TypeError) {
                 Log.d("ERROR", typeError.name)
             }
         })
+    }
+
+    private fun resultLauncher() {
+         resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result->
+            if(result.resultCode == Activity.RESULT_OK) {
+                val sms = result.data?.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE).toString()
+                Toast.makeText(this@MainActivity, sms, Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     override fun onDestroy() {
